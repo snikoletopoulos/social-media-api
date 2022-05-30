@@ -1,0 +1,16 @@
+{
+	"name": "social-media-api",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/app.ts",
+	"scripts": {
+		"dev": "nodemon",
+		"compile": "tsc",
+		"format": "prettier --write src"
+	},
+	"author": "Stavros",
+	"license": "ISC",
+	"dependencies": {
+		"apollo-server": "^3.8.1"
+	}
+}
