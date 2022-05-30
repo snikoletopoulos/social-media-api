@@ -9,13 +9,15 @@
 		"allowSyntheticDefaultImports": true,
 		"strict": true,
 		"forceConsistentCasingInFileNames": true,
-		"module": "ESNext",
+		"module": "NodeNext",
 		"moduleResolution": "Node",
 		"resolveJsonModule": true,
 		"isolatedModules": true,
 		"noEmit": true,
-		"jsx": "react-jsx",
 		"baseUrl": "src"
 	},
-	"include": ["./src"]
+	"include": ["./src"],
+	"ts-node": {
+		"files": true
+	}
 }
