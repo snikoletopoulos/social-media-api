@@ -1,9 +1,15 @@
 import { Post } from "@prisma/client";
 import { Context } from "../app";
 
-interface PostCreateArgs {
-	content: string;
-	title: string;
+interface PostContent {
+	post: {
+		content?: string;
+		title?: string;
+	};
+}
+
+interface PostArgs extends PostContent {
+	postId: string;
 }
 
 interface PostPayloadType {
@@ -16,7 +22,7 @@ interface PostPayloadType {
 export const Mutation = {
 	postCreate: async (
 		_: any,
-		{ title, content }: PostCreateArgs,
+		{ post: { title, content } }: PostContent,
 		{ prisma }: Context
 	): Promise<PostPayloadType> => {
 		try {
@@ -61,5 +67,11 @@ export const Mutation = {
 		}
 	},
 
-	postUpdate: async () => {},
+	postUpdate: async (_: any, {post, postId}: PostArgs ) => {
+		if ((!post.content && !post.title) || !postId) {
+			throw new Error("You must provide a postId and title or content to update a post.");
+		}
+
+		
+	},
 };
