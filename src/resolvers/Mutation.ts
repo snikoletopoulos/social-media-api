@@ -39,11 +39,22 @@ export const Mutation = {
 				userErrors: [],
 			};
 		} catch (error) {
+			if (!(error instanceof Error)) {
+				return {
+					post: null,
+					userErrors: [
+						{
+							message: "An error occurred while creating the post.",
+						},
+					],
+				};
+			}
+
 			return {
 				post: null,
 				userErrors: [
 					{
-						message: "An error occurred while creating the post.",
+						message: error.message,
 					},
 				],
 			};
