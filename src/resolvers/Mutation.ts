@@ -67,10 +67,68 @@ export const Mutation = {
 		}
 	},
 
-	postUpdate: async (_: any, {post, postId}: PostArgs ) => {
-		if ((!post.content && !post.title) || !postId) {
-			throw new Error("You must provide a postId and title or content to update a post.");
+	postUpdate: async (
+		_: any,
+		{ postId, post }: PostArgs,
+		{ prisma }: Context
+	): Promise<PostPayloadType> => {
+		try {
+			if ((!post.content && !post.title) || !postId) {
+				throw new Error(
+					"You must provide a postId and title or content to update a post."
+				);
+			}
+
+			const existingPost = await prisma.post.findUnique({
+				where: {
+					id: +postId,
+				},
+			});
+
+			if (!existingPost) {
+				throw new Error("The post you are trying to update does not exist.");
+			}
+
+			const updatedPostData = {
+				title: post.title || existingPost.title,
+				content: post.content || existingPost.content,
+			};
+
+			return {
+				post: await prisma.post.update({
+					where: {
+						id: +postId,
+					},
+					data: {
+						...updatedPostData,
+					},
+				}),
+				userErrors: [],
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					post: null,
+					userErrors: [
+						{
+							message: error.message,
+						},
+					],
+				};
+			}
+
+			return {
+				post: null,
+				userErrors: [
+					{
+						message: "An error occurred while updating the post.",
+					},
+				],
+			};
 		}
+		}
+	},
+
 
 		
 	},
