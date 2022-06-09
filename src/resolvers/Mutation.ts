@@ -126,10 +126,58 @@ export const Mutation = {
 				],
 			};
 		}
-		}
 	},
 
+	postDelete: async (
+		_: any,
+		{ postId }: { postId: string },
+		{ prisma }: Context
+	): Promise<PostPayloadType> => {
+		try {
+			if (!postId) {
+				throw new Error("You must provide a postId to delete a post.");
+			}
 
-		
+			const post = await prisma.post.findUnique({
+				where: {
+					id: +postId,
+				},
+			});
+
+			if (!post) {
+				throw new Error("The post you are trying to delete does not exist.");
+			}
+
+			await prisma.post.delete({
+				where: {
+					id: +postId,
+				},
+			});
+
+			return {
+				post,
+				userErrors: [],
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					post: null,
+					userErrors: [
+						{
+							message: error.message,
+						},
+					],
+				};
+			}
+
+			return {
+				post: null,
+				userErrors: [
+					{
+						message: "An error occurred while updating the post.",
+					},
+				],
+			};
+		}
 	},
 };
