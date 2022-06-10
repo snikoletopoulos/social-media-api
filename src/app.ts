@@ -3,7 +3,7 @@ import { PrismaClient, User } from "@prisma/client";
 
 import { typeDefs } from "./schema";
 import { Query, Mutation } from "./resolvers";
-import { getUserIdFromToken } from "helpers/getUserIdFromToken";
+import { getUserIdFromToken } from "./helpers/getUserIdFromToken";
 
 const prisma = new PrismaClient();
 
