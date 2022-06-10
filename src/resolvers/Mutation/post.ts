@@ -1,4 +1,6 @@
 import { Post } from "@prisma/client";
+
+import { IError } from "../../types/errors";
 import { Context } from "../../app";
 
 interface PostContent {
@@ -13,9 +15,7 @@ interface PostArgs extends PostContent {
 }
 
 interface PostPayloadType {
-	userErrors: {
-		message: string;
-	}[];
+	userErrors: IError[];
 	post: Post | null;
 }
 
