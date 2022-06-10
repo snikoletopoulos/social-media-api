@@ -23,9 +23,13 @@ export const postResolvers = {
 	postCreate: async (
 		_: any,
 		{ post: { title, content } }: PostContent,
-		{ prisma }: Context
+		{ prisma, user }: Context
 	): Promise<PostPayloadType> => {
 		try {
+			if (!user) {
+				throw new Error("You must be logged in to create a post.");
+			}
+
 			if (!title || !content) {
 				throw new Error(
 					"You must provide a title and content to create a post."
@@ -36,7 +40,7 @@ export const postResolvers = {
 				data: {
 					title,
 					content,
-					authorId: 1,
+					authorId: user.id,
 				},
 			});
 
@@ -70,9 +74,13 @@ export const postResolvers = {
 	postUpdate: async (
 		_: any,
 		{ postId, post }: PostArgs,
-		{ prisma }: Context
+		{ prisma, user }: Context
 	): Promise<PostPayloadType> => {
 		try {
+			if (!user) {
+				throw new Error("You must be logged in to edit a post.");
+			}
+
 			if ((!post.content && !post.title) || !postId) {
 				throw new Error(
 					"You must provide a postId and title or content to update a post."
@@ -87,6 +95,10 @@ export const postResolvers = {
 
 			if (!existingPost) {
 				throw new Error("The post you are trying to update does not exist.");
+			}
+
+			if (user.id !== existingPost.authorId) {
+				throw new Error("You are not authorized to edit this post.");
 			}
 
 			const updatedPostData = {
