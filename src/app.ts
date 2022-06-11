@@ -2,7 +2,7 @@ import { ApolloServer } from "apollo-server";
 import { PrismaClient, User } from "@prisma/client";
 
 import { typeDefs } from "./schema";
-import { Query, Mutation } from "./resolvers";
+import * as resolvers from "./resolvers";
 import { getUserIdFromToken } from "./helpers/getUserIdFromToken";
 
 const prisma = new PrismaClient();
@@ -14,10 +14,7 @@ export interface Context {
 
 const server = new ApolloServer({
 	typeDefs,
-	resolvers: {
-		Query,
-		Mutation,
-	},
+	resolvers,
 	context: async ({ req, res }): Promise<Context> => {
 		const { authorization } = req.headers;
 
