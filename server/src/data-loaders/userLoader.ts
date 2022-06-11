@@ -1,9 +1,9 @@
-import Dataloader, { BatchLoadFn } from "dataloader";
+import * as Dataloader from "dataloader";
 import { User } from "@prisma/client";
 
-import { prisma } from "app";
+import { prisma } from "../app";
 
-const BatchUsers: BatchLoadFn<number, User> = async keys => {
+const BatchUsers: Dataloader.BatchLoadFn<number, User> = async keys => {
 	const users = await prisma.user.findMany({
 		where: {
 			id: {

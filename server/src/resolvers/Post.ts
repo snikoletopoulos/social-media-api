@@ -1,5 +1,5 @@
 import { Post as IPost, User } from "@prisma/client";
-import { userLoader } from "data-loaders/userLoader";
+import { userLoader } from "../data-loaders/userLoader";
 
 import { Context } from "../app";
 
