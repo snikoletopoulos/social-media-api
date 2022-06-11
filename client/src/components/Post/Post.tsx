@@ -1,45 +1,35 @@
 import styles from "./Post.module.css";
 
 interface Props {
+	id: number;
 	title: string;
 	content: string;
 	date: number;
 	user: string;
 	published: boolean;
-	id: string;
 	isMyProfile: boolean;
 }
 
-const Post: React.FC<Props> = ({
-	title,
-	content,
-	date,
-	user,
-	published,
-	id,
-	isMyProfile,
-}) => {
-	const formatedDate = new Date(Number(date));
+const Post: React.FC<Props> = props => {
+	const { title, content, date, user, published, isMyProfile } = props;
+
+	const formatedDate = new Date(+date);
+
 	return (
 		<div
-			className="Post"
+			className={styles.Post}
 			style={published === false ? { backgroundColor: "hotpink" } : {}}
 		>
-			{isMyProfile && published === false && (
+			{isMyProfile && (
 				<p className={styles["Post__publish"]} onClick={() => {}}>
-					publish
-				</p>
-			)}
-			{isMyProfile && published === true && (
-				<p className={styles["Post__publish"]} onClick={() => {}}>
-					unpublish
+					{published ? "publish" : "unpublish"}
 				</p>
 			)}
 			<div className={styles["Post__header-container"]}>
 				<h2>{title}</h2>
 				<h4>
-					Created At {`${formatedDate}`.split(" ").splice(0, 3).join(" ")} by{" "}
-					{user}
+					Created At {formatedDate.toString().split(" ").splice(0, 3).join(" ")}{" "}
+					by {user.name}
 				</h4>
 			</div>
 			<p>{content}</p>
