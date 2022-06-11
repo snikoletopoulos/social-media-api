@@ -192,4 +192,116 @@ export const postResolvers = {
 			};
 		}
 	},
+
+	postPublish: async (
+		_: any,
+		{ postId }: { postId: string },
+		{ prisma, user }: Context
+	): Promise<PostPayloadType> => {
+		try {
+			if (!user) {
+				throw new Error("You must be logged in to publish a post.");
+			}
+
+			const existingPost = await prisma.post.findUnique({
+				where: {
+					id: +postId,
+				},
+			});
+
+			if (!existingPost || existingPost.authorId !== user.id) {
+				throw new Error("The post you are trying to publish does not exist.");
+			}
+
+			const updatedPost = await prisma.post.update({
+				where: {
+					id: existingPost.id,
+				},
+				data: {
+					published: true,
+				},
+			});
+
+			return {
+				post: updatedPost,
+				userErrors: [],
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					post: null,
+					userErrors: [
+						{
+							message: error.message,
+						},
+					],
+				};
+			}
+
+			return {
+				post: null,
+				userErrors: [
+					{
+						message: "An error occurred while updating the post.",
+					},
+				],
+			};
+		}
+	},
+
+	postUnpublish: async (
+		_: any,
+		{ postId }: { postId: string },
+		{ prisma, user }: Context
+	): Promise<PostPayloadType> => {
+		try {
+			if (!user) {
+				throw new Error("You must be logged in to publish a post.");
+			}
+
+			const existingPost = await prisma.post.findUnique({
+				where: {
+					id: +postId,
+				},
+			});
+
+			if (!existingPost || existingPost.authorId !== user.id) {
+				throw new Error("The post you are trying to unpublish does not exist.");
+			}
+
+			const updatedPost = await prisma.post.update({
+				where: {
+					id: existingPost.id,
+				},
+				data: {
+					published: false,
+				},
+			});
+
+			return {
+				post: updatedPost,
+				userErrors: [],
+			};
+		} catch (error) {
+			if (error instanceof Error) {
+				return {
+					post: null,
+					userErrors: [
+						{
+							message: error.message,
+						},
+					],
+				};
+			}
+
+			return {
+				post: null,
+				userErrors: [
+					{
+						message: "An error occurred while updating the post.",
+					},
+				],
+			};
+		}
+	},
 };
