@@ -33,24 +33,6 @@ const server = new ApolloServer({
 			user,
 		};
 	},
-	context: async ({ req, res }): Promise<Context> => {
-		const { authorization } = req.headers;
-
-		const userId = authorization
-			? getUserIdFromToken(authorization)
-			: undefined;
-
-		const user = await prisma.user.findUnique({
-			where: {
-				id: userId,
-			},
-		});
-
-		return {
-			prisma,
-			user,
-		};
-	},
 });
 
 server.listen().then(({ url }) => {
