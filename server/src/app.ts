@@ -15,18 +15,25 @@ export interface Context {
 const server = new ApolloServer({
 	typeDefs,
 	resolvers,
-	context: async ({ req, res }): Promise<Context> => {
+	context: async ({ req }): Promise<Context> => {
 		const { authorization } = req.headers;
 
 		const userId = authorization
 			? getUserIdFromToken(authorization)
 			: undefined;
 
-		const user = await prisma.user.findUnique({
-			where: {
-				id: userId,
-			},
-		});
+		let user: User | null = null;
+		if (userId) {
+			try {
+				user = await prisma.user.findUnique({
+					where: {
+						id: userId,
+					},
+				});
+			} catch (error) {
+				console.log(error);
+			}
+		}
 
 		return {
 			prisma,
