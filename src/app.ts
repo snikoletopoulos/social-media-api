@@ -5,7 +5,7 @@ import { typeDefs } from "./schema";
 import * as resolvers from "./resolvers";
 import { getUserIdFromToken } from "./helpers/getUserIdFromToken";
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 export interface Context {
 	prisma: PrismaClient;
