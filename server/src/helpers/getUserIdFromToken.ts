@@ -1,4 +1,4 @@
-import JWT from "jsonwebtoken";
+import * as JWT from "jsonwebtoken";
 
 export const getUserIdFromToken = (token: string) => {
 	if (!process.env.JWT_SECRET) {
@@ -6,8 +6,15 @@ export const getUserIdFromToken = (token: string) => {
 	}
 
 	try {
-		return +JWT.verify(token, process.env.JWT_SECRET);
+		const jwt = JWT.verify(token, process.env.JWT_SECRET);
+
+		if (typeof jwt === "string" || !("userId" in jwt)) {
+			throw new Error("Invalid token.");
+		}
+
+		return jwt.userId;
 	} catch (error) {
+		console.log(error);
 		return;
 	}
 };
