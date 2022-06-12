@@ -2,17 +2,17 @@ import { User as IUser, Post } from "@prisma/client";
 import { Context } from "../app";
 
 export const User = {
-	posts: async (
+	posts: (
 		user: IUser,
 		_: any,
 		{ prisma, user: requestUser }: Context
 	): Promise<Post[]> => {
 		const isOwnProfile = user.id === requestUser?.id;
 
-		return await prisma.post.findMany({
+		return prisma.post.findMany({
 			where: {
 				authorId: user.id,
-				...(isOwnProfile ? {} : { isPublished: true }),
+				...(isOwnProfile ? {} : { published: true }),
 			},
 			orderBy: [
 				{
