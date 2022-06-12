@@ -20,4 +20,16 @@ export const Profile = {
 
 		return user;
 	},
+
+	isMyProfile: (
+		profile: IProfile,
+		_2: any,
+		{ prisma, user }: Context
+	): boolean => {
+		if (!user) {
+			return false;
+		}
+
+		return profile.userId === user.id;
+	},
 };

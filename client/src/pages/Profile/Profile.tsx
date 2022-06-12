@@ -51,7 +51,7 @@ const Profile: React.FC = () => {
 					<h1>{user.name}</h1>
 					<p>{bio}</p>
 				</div>
-				<div>{"profile" ? <AddPostModal /> : null}</div>
+				<div>{isMyProfile ? <AddPostModal /> : null}</div>
 			</div>
 			<div>
 				{user.posts.map(post => (
