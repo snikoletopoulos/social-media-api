@@ -5,7 +5,9 @@ interface Props {
 	title: string;
 	content: string;
 	date: number;
-	user: string;
+	user: {
+		name: string;
+	};
 	published: boolean;
 	isMyProfile: boolean;
 }

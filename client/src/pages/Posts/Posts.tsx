@@ -1,5 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 
+import { GetPostsData } from "./Posts.types";
 import Post from "components/Post";
 
 const GET_POSTS = gql`
@@ -9,6 +10,7 @@ const GET_POSTS = gql`
 			title
 			content
 			createdAt
+			published
 			user {
 				name
 			}
@@ -17,13 +19,13 @@ const GET_POSTS = gql`
 `;
 
 const Posts: React.FC = () => {
-	const { loading, error, data } = useQuery(GET_POSTS);
+	const { loading, error, data } = useQuery<GetPostsData>(GET_POSTS);
 
 	if (error) return <div>Error Page</div>;
 
 	if (loading) return <div>Loading...</div>;
 
-	const { posts } = data;
+	const { posts } = data ?? { posts: [] };
 
 	return (
 		<div>

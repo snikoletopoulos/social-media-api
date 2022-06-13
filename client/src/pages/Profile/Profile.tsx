@@ -3,6 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 
 import AddPostModal from "components/AddPostModal/AddPostModal";
 import Post from "components/Post";
+import { GetProfileData, GetProfileVariables } from "./Profile.types";
 
 const GET_PROFILE = gql`
 	query GetProfile($userId: ID!) {
@@ -16,6 +17,7 @@ const GET_PROFILE = gql`
 					id
 					title
 					content
+					published
 					createdAt
 				}
 			}
@@ -26,15 +28,20 @@ const GET_PROFILE = gql`
 const Profile: React.FC = () => {
 	const { id } = useParams();
 
-	const { loading, error, data } = useQuery(GET_PROFILE, {
+	const { loading, error, data } = useQuery<
+		GetProfileData,
+		GetProfileVariables
+	>(GET_PROFILE, {
 		variables: {
-			userId: id,
+			userId: id ? +id : 0,
 		},
 	});
 
 	if (error) return <div>Error Page</div>;
 
 	if (loading) return <div>Loading...</div>;
+
+	if (!data) return <div>No data</div>;
 
 	const { bio, user, isMyProfile } = data.profile;
 
