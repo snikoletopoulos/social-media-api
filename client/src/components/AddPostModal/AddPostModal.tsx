@@ -1,8 +1,23 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { gql, useMutation } from "@apollo/client";
+
+const ADD_POST = gql`
+	mutation AddPost($title: String!, $content: String!) {
+		postAdd(title: $title, content: $content) {
+			userErrors {
+				message
+			}
+			post {
+				title
+			}
+		}
+	}
+`;
 
 const AddPostModal: React.FC = () => {
 	const [show, setShow] = useState(false);
+	const [addPost] = useMutation(ADD_POST);
 
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
@@ -10,7 +25,15 @@ const AddPostModal: React.FC = () => {
 	const [content, setContent] = useState("");
 	const [title, setTitle] = useState("");
 
-	const handleClick = () => {};
+	const handleAddPost = () => {
+		addPost({
+			variables: {
+				title,
+				content,
+			},
+		});
+		handleClose();
+	};
 
 	return (
 		<>
@@ -61,7 +84,7 @@ const AddPostModal: React.FC = () => {
 					<Button variant="secondary" onClick={handleClose}>
 						Close
 					</Button>
-					<Button variant="primary" onClick={handleClick}>
+					<Button variant="primary" onClick={handleAddPost}>
 						Add
 					</Button>
 				</Modal.Footer>
