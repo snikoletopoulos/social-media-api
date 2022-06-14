@@ -1,15 +1,55 @@
 import { useState, useEffect } from "react";
+import { gql, useMutation } from "@apollo/client";
+import { UserCredentials } from "types/user.types";
 
 import { Form } from "react-bootstrap";
 import Button from "@restart/ui/esm/Button";
+import { ResponsePayload } from "types/response.types";
+
+const SIGNIN = gql`
+	mutation Signin($credentials: CredentialsInput!) {
+		signin(credentials: $credentials) {
+			userErrors {
+				message
+			}
+			token
+		}
+	}
+`;
 
 const Signin: React.FC = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
-	const handleClick = () => {};
+	const [handleSignin, { data }] = useMutation<
+		{ signin: ResponsePayload<{ token: string }> },
+		{ credentials: UserCredentials }
+	>(SIGNIN);
 
-	const [error, setError] = useState(null);
+	useEffect(() => {
+		if (!data) return;
+
+		if (data.signin.userErrors.length) {
+			setError(data.signin.userErrors[0].message);
+		}
+
+		if (data.signin.token) {
+			localStorage.setItem("token", data.signin.token);
+		}
+	}, [data]);
+
+	const handleClick = () => {
+		handleSignin({
+			variables: {
+				credentials: {
+					email,
+					password,
+				},
+			},
+		});
+	};
+
+	const [error, setError] = useState<string | null>(null);
 
 	return (
 		<div>
