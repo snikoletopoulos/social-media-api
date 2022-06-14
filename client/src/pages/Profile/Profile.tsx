@@ -70,7 +70,7 @@ const Profile: React.FC = () => {
 						date={post.createdAt}
 						user={user}
 						published={post.published}
-						isMyProfile={false}
+						isMyProfile={isMyProfile}
 					/>
 				))}
 			</div>
