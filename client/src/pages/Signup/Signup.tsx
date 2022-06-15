@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import { SignupData } from "./Signup.types";
 import { ResponsePayload } from "types/response.types";
@@ -13,17 +13,15 @@ const SIGNUP = gql`
 		$password: String!
 		$bio: String
 	) {
-		userSignup(
+		signup(
 			name: $name
-			credetials: { email: $email, password: $password }
+			credentials: { email: $email, password: $password }
 			bio: $bio
 		) {
 			userErrors {
 				message
 			}
-			user {
-				token
-			}
+			token
 		}
 	}
 `;
@@ -34,31 +32,36 @@ const Signup: React.FC = () => {
 	const [name, setName] = useState("");
 	const [bio, setBio] = useState("");
 
-	const [handleSignup, { data, error: mutationError }] = useMutation<
-		ResponsePayload<{
-			user: {
-				token: string;
-			};
-		}>,
+	const [handleSignup, { data }] = useMutation<
+		{ signup: ResponsePayload<{ token: string }> },
 		SignupData
 	>(SIGNUP);
-
-	console.log(data);
 
 	const handleClick = () => {
 		handleSignup({
 			variables: {
 				name,
 				bio,
-				credentials: {
-					email,
-					password,
-				},
+				email,
+				password,
 			},
 		});
 	};
 
-	const [error, setError] = useState(null);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!data) return;
+
+		if (data.signup.userErrors.length) {
+			setError(data.signup.userErrors[0].message);
+		}
+
+		if (data.signup.token) {
+			localStorage.setItem("token", data.signup.token);
+			setError(null);
+		}
+	}, [data]);
 
 	return (
 		<div>

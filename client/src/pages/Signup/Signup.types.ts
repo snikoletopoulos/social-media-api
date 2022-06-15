@@ -1,7 +1,6 @@
 import { UserCredentials } from "types/user.types";
 
-export interface SignupData {
+export interface SignupData extends UserCredentials {
 	name: string;
 	bio?: string;
-	credentials: UserCredentials;
 }
