@@ -4,7 +4,7 @@ import { gql, useMutation } from "@apollo/client";
 
 const ADD_POST = gql`
 	mutation AddPost($title: String!, $content: String!) {
-		postAdd(title: $title, content: $content) {
+		postCreate(post: { title: $title, content: $content }) {
 			userErrors {
 				message
 			}
