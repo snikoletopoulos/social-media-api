@@ -21,11 +21,7 @@ export const Profile = {
 		return user;
 	},
 
-	isMyProfile: (
-		profile: IProfile,
-		_2: any,
-		{ prisma, user }: Context
-	): boolean => {
+	isMyProfile: (profile: IProfile, _2: any, { user }: Context): boolean => {
 		if (!user) {
 			return false;
 		}
