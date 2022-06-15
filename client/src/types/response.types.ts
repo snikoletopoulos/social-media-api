@@ -1,5 +1,5 @@
 import { IError } from "./error.types";
 
-export interface ResponsePayload<T> extends T {
+export type ResponsePayload<T> = T & {
 	userErrors: IError[];
-}
+};
