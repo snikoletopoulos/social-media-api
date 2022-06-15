@@ -5,11 +5,13 @@
 	position: relative;
 }
 
-.Post__publish {
+.Post__actions {
 	position: absolute;
 	right: 5px;
 	font-size: 7px;
 	cursor: pointer;
+	display: flex;
+	gap: 3em;
 }
 
 .Post__header-container {

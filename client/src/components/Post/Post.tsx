@@ -2,7 +2,7 @@ import styles from "./Post.module.css";
 import { gql, useMutation } from "@apollo/client";
 import { ResponsePayload } from "types/response.types";
 
-import { PublusityVariables } from "./Post.types";
+import { PostDeleteVariables, PublusityVariables } from "./Post.types";
 
 const PUBLISH_POST = gql`
 	mutation PublishPost($postId: ID!) {
@@ -20,6 +20,19 @@ const PUBLISH_POST = gql`
 const UNPUBLISH_POST = gql`
 	mutation UnpublishPost($postId: ID!) {
 		postUnpublish(postId: $postId) {
+			userErrors {
+				message
+			}
+			post {
+				title
+			}
+		}
+	}
+`;
+
+const DELETE_POST = gql`
+	mutation DeletePost($postId: ID!) {
+		postDelete(postId: $postId) {
 			userErrors {
 				message
 			}
@@ -52,6 +65,10 @@ const Post: React.FC<Props> = props => {
 		ResponsePayload<{ title: string }>,
 		PublusityVariables
 	>(UNPUBLISH_POST);
+	const [deletePost] = useMutation<
+		ResponsePayload<{ title: string }>,
+		PostDeleteVariables
+	>(DELETE_POST, { variables: { postId: props.id } });
 
 	const formatedDate = new Date(+date);
 
@@ -77,9 +94,10 @@ const Post: React.FC<Props> = props => {
 			style={published === false ? { backgroundColor: "hotpink" } : {}}
 		>
 			{isMyProfile && (
-				<p className={styles["Post__publish"]} onClick={togglePublished}>
-					{published ? "unpublish" : "publish"}
-				</p>
+				<div className={styles["Post__actions"]}>
+					<p onClick={togglePublished}>{published ? "unpublish" : "publish"}</p>
+					<p onClick={() => deletePost()}>delete</p>
+				</div>
 			)}
 			<div className={styles["Post__header-container"]}>
 				<h2>{title}</h2>

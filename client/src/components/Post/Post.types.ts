@@ -1,3 +1,5 @@
 export interface PublusityVariables {
-  postId: number;
+	postId: number;
 }
+
+export type PostDeleteVariables = PublusityVariables;
