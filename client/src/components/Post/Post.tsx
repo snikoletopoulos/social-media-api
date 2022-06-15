@@ -78,7 +78,7 @@ const Post: React.FC<Props> = props => {
 		>
 			{isMyProfile && (
 				<p className={styles["Post__publish"]} onClick={togglePublished}>
-					{published ? "publish" : "unpublish"}
+					{published ? "unpublish" : "publish"}
 				</p>
 			)}
 			<div className={styles["Post__header-container"]}>
