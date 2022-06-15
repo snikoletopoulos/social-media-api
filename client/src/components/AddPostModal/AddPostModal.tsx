@@ -1,6 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { gql, useMutation } from "@apollo/client";
+
+import { AddPostVariables } from "./AddPostModal.types";
+import { ResponsePayload } from "types/response.types";
 
 const ADD_POST = gql`
 	mutation AddPost($title: String!, $content: String!) {
@@ -17,15 +20,29 @@ const ADD_POST = gql`
 
 const AddPostModal: React.FC = () => {
 	const [show, setShow] = useState(false);
-	const [addPost] = useMutation(ADD_POST);
+	const [error, setError] = useState<string | null>(null);
+	const [addPost, { data }] = useMutation<
+		{ postCreate: ResponsePayload<{ post: { title: string } }> },
+		AddPostVariables
+	>(ADD_POST);
 
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
+
+	useEffect(() => {
+		if (!data) return;
+
+		if (data.postCreate.userErrors.length) {
+			setError(data.postCreate.userErrors[0].message);
+		}
+	}, [data]);
 
 	const [content, setContent] = useState("");
 	const [title, setTitle] = useState("");
 
 	const handleAddPost = () => {
+		if (!title || !content) return;
+
 		addPost({
 			variables: {
 				title,
@@ -81,6 +98,7 @@ const AddPostModal: React.FC = () => {
 					</Form>
 				</Modal.Body>
 				<Modal.Footer>
+					{error && <p>{error}</p>}
 					<Button variant="secondary" onClick={handleClose}>
 						Close
 					</Button>
