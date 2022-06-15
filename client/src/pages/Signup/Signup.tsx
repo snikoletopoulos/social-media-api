@@ -1,7 +1,32 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import { SignupData } from "./Signup.types";
+import { ResponsePayload } from "types/response.types";
 
 import Button from "@restart/ui/esm/Button";
 import { Form } from "react-bootstrap";
+
+const SIGNUP = gql`
+	mutation Signup(
+		$name: String!
+		$email: String!
+		$password: String!
+		$bio: String
+	) {
+		userSignup(
+			name: $name
+			credetials: { email: $email, password: $password }
+			bio: $bio
+		) {
+			userErrors {
+				message
+			}
+			user {
+				token
+			}
+		}
+	}
+`;
 
 const Signup: React.FC = () => {
 	const [email, setEmail] = useState("");
@@ -9,7 +34,29 @@ const Signup: React.FC = () => {
 	const [name, setName] = useState("");
 	const [bio, setBio] = useState("");
 
-	const handleClick = () => {};
+	const [handleSignup, { data, error: mutationError }] = useMutation<
+		ResponsePayload<{
+			user: {
+				token: string;
+			};
+		}>,
+		SignupData
+	>(SIGNUP);
+
+	console.log(data);
+
+	const handleClick = () => {
+		handleSignup({
+			variables: {
+				name,
+				bio,
+				credentials: {
+					email,
+					password,
+				},
+			},
+		});
+	};
 
 	const [error, setError] = useState(null);
 
