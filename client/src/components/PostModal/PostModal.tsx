@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { gql, useMutation } from "@apollo/client";
 
-import { AddPostVariables } from "./AddPostModal.types";
+import { AddPostVariables, UpdatePostVariables } from "./PostModal.types";
 import { ResponsePayload } from "types/response.types";
 
 const ADD_POST = gql`
@@ -18,44 +18,83 @@ const ADD_POST = gql`
 	}
 `;
 
-const AddPostModal: React.FC = () => {
+const UPDATE_POST = gql`
+	mutation UpdatePost($postId: ID!, $title: String!, $content: String!) {
+		postUpdate(postId: $postId, post: { title: $title, content: $content }) {
+			userErrors {
+				message
+			}
+			post {
+				title
+			}
+		}
+	}
+`;
+
+interface Props {
+	postId?: number;
+	post?: {
+		title: string;
+		content: string;
+	};
+}
+
+const PostModal: React.FC<Props> = props => {
 	const [show, setShow] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [addPost, { data }] = useMutation<
+	const [addPost, { data: addPostData }] = useMutation<
 		{ postCreate: ResponsePayload<{ post: { title: string } }> },
 		AddPostVariables
 	>(ADD_POST);
+	const [updatePost, { data: updatePostData }] = useMutation<
+		{ postCreate: ResponsePayload<{ post: { title: string } }> },
+		UpdatePostVariables
+	>(UPDATE_POST);
 
 	const handleClose = () => setShow(false);
 	const handleShow = () => setShow(true);
 
 	useEffect(() => {
-		if (!data) return;
+		if (!addPostData && !updatePostData) return;
 
-		if (data.postCreate.userErrors.length) {
-			setError(data.postCreate.userErrors[0].message);
+		if (addPostData?.postCreate?.userErrors.length) {
+			setError(addPostData.postCreate.userErrors[0].message);
 		}
-	}, [data]);
 
-	const [content, setContent] = useState("");
-	const [title, setTitle] = useState("");
+		if (updatePostData?.postCreate?.userErrors.length) {
+			setError(updatePostData.postCreate.userErrors[0].message);
+		}
+	}, [addPostData, updatePostData]);
 
-	const handleAddPost = () => {
+	const [content, setContent] = useState(props.post?.content ?? "");
+	const [title, setTitle] = useState(props.post?.title ?? "");
+
+	const handleSubmit = () => {
 		if (!title || !content) return;
 
-		addPost({
-			variables: {
-				title,
-				content,
-			},
-		});
+		if (props.postId) {
+			updatePost({
+				variables: {
+					postId: props.postId,
+					title,
+					content,
+				},
+			});
+		} else {
+			addPost({
+				variables: {
+					title,
+					content,
+				},
+			});
+		}
 		handleClose();
 	};
 
 	return (
 		<>
 			<Button variant="primary" onClick={handleShow}>
-				Add Post
+				{props.postId ? "Update" : "Add"} Post
 			</Button>
 
 			<Modal
@@ -102,8 +141,8 @@ const AddPostModal: React.FC = () => {
 					<Button variant="secondary" onClick={handleClose}>
 						Close
 					</Button>
-					<Button variant="primary" onClick={handleAddPost}>
-						Add
+					<Button variant="primary" onClick={handleSubmit}>
+						{props.postId ? "Update" : "Add"}
 					</Button>
 				</Modal.Footer>
 			</Modal>
@@ -111,4 +150,4 @@ const AddPostModal: React.FC = () => {
 	);
 };
 
-export default AddPostModal;
+export default PostModal;

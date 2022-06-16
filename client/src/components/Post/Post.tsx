@@ -4,6 +4,8 @@ import { ResponsePayload } from "types/response.types";
 
 import { PostDeleteVariables, PublusityVariables } from "./Post.types";
 
+import PostModal from "components/PostModal";
+
 const PUBLISH_POST = gql`
 	mutation PublishPost($postId: ID!) {
 		postPublish(postId: $postId) {
@@ -101,6 +103,10 @@ const Post: React.FC<Props> = props => {
 			)}
 			<div className={styles["Post__header-container"]}>
 				<h2>{title}</h2>
+				<PostModal
+					postId={props.id}
+					post={{ title: props.title, content: props.content }}
+				/>
 				<h4>
 					Created At {formatedDate.toString().split(" ").splice(0, 3).join(" ")}{" "}
 					by {user.name}
